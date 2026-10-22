@@ -129,9 +129,16 @@ export default function AuditExplorer({
               >
                 {/* Summary Card */}
                 <div
-                  role="button" tabIndex={0} aria-expanded={expandedId === log.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={expandedId === log.id}
                   aria-label={`Audit entry ${log.id}`}
-                  onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setExpandedId(expandedId === log.id ? null : log.id); } }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setExpandedId(expandedId === log.id ? null : log.id);
+                    }
+                  }}
                   className="flex items-center justify-between p-4 cursor-pointer"
                   onClick={() =>
                     setExpandedId(expandedId === log.id ? null : log.id)

@@ -47,6 +47,8 @@ jobs:
       - name: Theme Engine Unit & Integration Tests
         run: npm run test:theme --workspace=frontend
 
+      - name: Native Node regression suites
+        run: npm run test:node --workspace=frontend
 
       - name: Build Frontend
         run: npm run build --workspace=frontend --if-present
@@ -93,7 +95,6 @@ jobs:
           tests/corsAdmin.test.js
           tests/swagger.test.js
           tests/zodOpenApi.test.js
-
 
   security-audit:
     name: Security Audit
@@ -186,7 +187,6 @@ jobs:
 
       - name: Build optimized WASM artifacts
         run: cargo build --release --target wasm32-unknown-unknown --workspace --exclude soroban-playground-indexer --exclude soroban-indexer --exclude zk-verifier --exclude testing-framework --exclude property-testing
-
 
       - name: Enforce 64KB WASM size limit
         run: |

@@ -444,6 +444,8 @@ export default function SidebarShell({
       <div
         ref={drawerRef}
         id="mobile-navigation-drawer"
+        aria-hidden={!isOpen}
+        inert={!isOpen}
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
