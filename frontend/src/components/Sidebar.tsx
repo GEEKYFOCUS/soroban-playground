@@ -130,7 +130,7 @@ export default function SidebarShell({
     },
   );
 
-  const drawerRef = useRef<HTMLElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const touchStartRef = useRef<{ x: number; y: number; at: number } | null>(
     null,

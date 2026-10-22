@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import DeployPanel from "@/components/DeployPanel";
 import { SkipNavigation } from "@/accessibility/SkipNavigation";
 import { ScreenReaderAnnouncer } from "@/accessibility/ScreenReaderAnnouncer";
 import { useModalAccessibility } from "@/accessibility/useModalAccessibility";
@@ -84,4 +85,21 @@ test("output tabs support arrows and selection semantics", () => {
   expect(screen.getByRole("tabpanel")).toHaveTextContent("Terminal pane");
   fireEvent.keyDown(document.activeElement!, { key: "End" });
   expect(screen.getByRole("tab", { name: "Event Streamer" })).toHaveFocus();
+});
+
+test("busy build controls retain keyboard focus and prevent duplicate requests", () => {
+  const onCompile = jest.fn();
+  const props = { onCompile, onDeploy: jest.fn(), isCompiling: false, isDeploying: false, hasCompiled: true };
+  const { rerender } = render(<DeployPanel {...props} />);
+  const button = screen.getByRole("button", { name: "Compile", exact: true });
+  button.focus();
+  rerender(<DeployPanel {...props} isCompiling />);
+  expect(button).toHaveFocus();
+  expect(button).toHaveAttribute("aria-disabled", "true");
+  fireEvent.click(button);
+  expect(onCompile).not.toHaveBeenCalled();
+  rerender(<DeployPanel {...props} />);
+  expect(button).toHaveFocus();
+  fireEvent.click(button);
+  expect(onCompile).toHaveBeenCalledTimes(1);
 });
