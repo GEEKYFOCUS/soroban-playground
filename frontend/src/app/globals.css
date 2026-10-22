@@ -426,3 +426,7 @@ a {
   background-color: #d1fae5;
   color: #065f46;
 }
+
+[data-theme="light"] .asset-balance-errors {
+  color: #92400e;
+}
