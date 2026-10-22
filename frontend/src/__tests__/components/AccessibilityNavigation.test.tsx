@@ -5,6 +5,8 @@ import { ScreenReaderAnnouncer } from "@/accessibility/ScreenReaderAnnouncer";
 import { useModalAccessibility } from "@/accessibility/useModalAccessibility";
 import { ConsoleAndEventsDrawer } from "@/components/ConsoleAndEventsDrawer";
 
+jest.mock("next/navigation", () => ({ usePathname: () => "/" }));
+
 jest.mock("@/components/Console", () => ({
   __esModule: true,
   default: () => <div>Console pane</div>,

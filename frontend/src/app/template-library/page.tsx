@@ -28,11 +28,20 @@ const DIFFICULTY_COLOR: Record<Template["difficulty"], string> = {
 
 /** #1526 — one-line honest state for the workspace sync. */
 const SYNC_BADGE: Record<string, { label: string; className: string }> = {
-  idle: { label: "Local only", className: "border-slate-700 text-slate-400" },
+  idle: { label: "Local only", className: "border-slate-700 text-slate-700" },
   loading: { label: "Syncing…", className: "border-sky-500/40 text-sky-300" },
-  synced: { label: "Synced", className: "border-emerald-500/40 text-emerald-300" },
-  queued: { label: "Queued for sync", className: "border-amber-500/40 text-amber-300" },
-  offline: { label: "Saved offline", className: "border-amber-500/40 text-amber-300" },
+  synced: {
+    label: "Synced",
+    className: "border-emerald-500/40 text-emerald-300",
+  },
+  queued: {
+    label: "Queued for sync",
+    className: "border-amber-500/40 text-amber-300",
+  },
+  offline: {
+    label: "Saved offline",
+    className: "border-amber-500/40 text-amber-300",
+  },
   error: { label: "Sync failed", className: "border-red-500/40 text-red-300" },
 };
 

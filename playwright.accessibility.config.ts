@@ -14,7 +14,7 @@ export default defineConfig({
   use: {
     colorScheme: "dark",
     baseURL: "http://localhost:3000",
-    trace: "retain-on-failure",
+    trace: "off",
     screenshot: "only-on-failure",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],

@@ -54,7 +54,10 @@ const TransactionCallGraphPanel = dynamic(
 import Console from "@/components/Console";
 import { ConsoleAndEventsDrawer } from "@/components/ConsoleAndEventsDrawer";
 import DeployPanel from "@/components/DeployPanel";
-import { PreflightChecklist, type DeploymentPlan } from "@/components/Deploy/PreflightChecklist";
+import {
+  PreflightChecklist,
+  type DeploymentPlan,
+} from "@/components/Deploy/PreflightChecklist";
 import { MediaCollaborationPanel } from "@/collaboration/MediaCollaborationPanel";
 import { announceToScreenReader } from "@/lib/accessibility";
 import BranchConflictResolver from "@/components/Git/BranchConflictResolver";
@@ -328,8 +331,9 @@ export default function Home() {
       `Loaded template "${template.name}" into the editor.`,
     ]);
   }, []);
-  const [formatDiagnostics, setFormatDiagnostics] =
-    useState<RustFormatDiagnostic[]>([]);
+  const [formatDiagnostics, setFormatDiagnostics] = useState<
+    RustFormatDiagnostic[]
+  >([]);
   const [isFormatting, setIsFormatting] = useState(false);
   const [logs, setLogs] = useState<string[]>([
     `Soroban Playground ready.`,
@@ -421,7 +425,9 @@ export default function Home() {
   const [selectedGraphNodeId, setSelectedGraphNodeId] = useState<string>();
   const [lastArtifactName, setLastArtifactName] =
     useState<string>("contract.wasm");
-  const [deploymentPlan, setDeploymentPlan] = useState<DeploymentPlan | null>(null);
+  const [deploymentPlan, setDeploymentPlan] = useState<DeploymentPlan | null>(
+    null,
+  );
   const [lastDeployMessage, setLastDeployMessage] = useState<string>();
   const [contractAbi, setContractAbi] = useState<
     Array<{ name: string; inputs?: Array<{ name: string; type: string }> }>
@@ -492,9 +498,12 @@ export default function Home() {
   const [govVotingPower, setGovVotingPower] = useState(0);
   const [isGovLoading, setIsGovLoading] = useState(false);
 
-  const appendLog = useCallback((msg: string) => {
-    setLogs((prev) => [...prev, msg]);
-  }, [setLogs]);
+  const appendLog = useCallback(
+    (msg: string) => {
+      setLogs((prev) => [...prev, msg]);
+    },
+    [setLogs],
+  );
 
   useEffect(() => {
     setContractAbi(parseContractAbiFromSource(code));
@@ -528,7 +537,7 @@ export default function Home() {
       }
 
       throw new Error(
-        `Health check failed with ${response ? response.status : "network error"}`
+        `Health check failed with ${response ? response.status : "network error"}`,
       );
     } catch (error) {
       setHealthState("offline");
@@ -699,14 +708,18 @@ export default function Home() {
       const compileLogs = payload.logs ?? [];
 
       setHasCompiled(true);
-      setLastArtifactName(payload.artifact?.path ?? payload.artifact?.name ?? "contract.wasm");
+      setLastArtifactName(
+        payload.artifact?.path ?? payload.artifact?.name ?? "contract.wasm",
+      );
       const summaryMsg = `${payload.message} · ${payload.artifact?.name ?? "artifact"} · ${
         payload.artifact?.sizeBytes
           ? `${(payload.artifact.sizeBytes / 1024).toFixed(1)} KB`
           : "size unavailable"
       } · ${payload.cached ? "cache hit" : "fresh build"}`;
       setCompileSummary(summaryMsg);
-      announceToScreenReader("Compilation succeeded. Contract is ready to deploy.");
+      announceToScreenReader(
+        "Compilation succeeded. Contract is ready to deploy.",
+      );
 
       // Complete compilation in Zustand store
       useCompileStore.getState().successCompile(summaryMsg);
@@ -741,8 +754,13 @@ export default function Home() {
   };
 
   const handleDeploy = async () => {
-    if (!deploymentPlan || deploymentPlan.wasmPath !== lastArtifactName || Date.now() - deploymentPlan.checkedAt >= 30000) {
-      appendLog("[warn] Run valid pre-flight checks before deploying."); return;
+    if (
+      !deploymentPlan ||
+      deploymentPlan.wasmPath !== lastArtifactName ||
+      Date.now() - deploymentPlan.checkedAt >= 30000
+    ) {
+      appendLog("[warn] Run valid pre-flight checks before deploying.");
+      return;
     }
     setIsDeploying(true);
     setLastDeployMessage(undefined);
@@ -769,7 +787,9 @@ export default function Home() {
       });
 
       setContractId(payload.contractId);
-      announceToScreenReader(`Deployment succeeded on ${payload.network}. Contract address: ${payload.contractId}`);
+      announceToScreenReader(
+        `Deployment succeeded on ${payload.network}. Contract address: ${payload.contractId}`,
+      );
       setContractAbi((prev) =>
         prev.length > 0 ? prev : parseContractAbiFromSource(code),
       );
@@ -801,7 +821,10 @@ export default function Home() {
       });
     } catch (error) {
       appendLog(`[error] Deploy failed: ${formatApiError(error)}`);
-      announceToScreenReader(`Deployment failed: ${formatApiError(error)}`, "assertive");
+      announceToScreenReader(
+        `Deployment failed: ${formatApiError(error)}`,
+        "assertive",
+      );
     } finally {
       setIsDeploying(false);
     }
@@ -2435,7 +2458,9 @@ export default function Home() {
       const result = await formatRustInWorker(source);
       if ("diagnostics" in result) {
         setFormatDiagnostics(result.diagnostics);
-        appendLog(`[editor] rustfmt found ${result.diagnostics.length} syntax error(s)`);
+        appendLog(
+          `[editor] rustfmt found ${result.diagnostics.length} syntax error(s)`,
+        );
       } else {
         setFormatDiagnostics([]);
         setCode(result.formatted);
@@ -2459,7 +2484,9 @@ export default function Home() {
         />
       )}
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-[1600px] flex-col overflow-hidden rounded-[28px] border border-white/8 bg-slate-950/60 shadow-[0_30px_120px_rgba(2,8,23,0.7)] backdrop-blur">
-        <MediaCollaborationPanel wsUrl={`${DEFAULT_API_BASE_URL.replace(/^http/, "ws")}/ws`} />
+        <MediaCollaborationPanel
+          wsUrl={`${DEFAULT_API_BASE_URL.replace(/^http/, "ws")}/ws`}
+        />
         <header className="border-b border-white/8 bg-slate-950/70 px-6 py-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-4">
@@ -2611,7 +2638,14 @@ export default function Home() {
             output={
               <aside className="flex flex-col gap-4 bg-slate-950/40 p-4">
                 <DeployPanel
-                  preflight={<PreflightChecklist apiBaseUrl={DEFAULT_API_BASE_URL} wasmPath={lastArtifactName} enabled={hasCompiled && !isCompiling && !isDeploying} onPlanChange={setDeploymentPlan} />}
+                  preflight={
+                    <PreflightChecklist
+                      apiBaseUrl={DEFAULT_API_BASE_URL}
+                      wasmPath={lastArtifactName}
+                      enabled={hasCompiled && !isCompiling && !isDeploying}
+                      onPlanChange={setDeploymentPlan}
+                    />
+                  }
                   deploymentAllowed={Boolean(deploymentPlan)}
                   networkLabel={deploymentPlan?.network || "selected network"}
                   onCompile={handleCompile}
@@ -2713,6 +2747,7 @@ export default function Home() {
                     </button>
                   </div>
                   <textarea
+                    aria-label="Batch compile contracts JSON"
                     value={batchCompileRaw}
                     onChange={(e) => setBatchCompileRaw(e.target.value)}
                     className="h-44 w-full rounded-xl border border-white/10 bg-slate-950/70 p-3 font-mono text-[11px] text-slate-200 outline-none"
@@ -2753,6 +2788,7 @@ export default function Home() {
                     </button>
                   </div>
                   <textarea
+                    aria-label="Batch deployment contracts JSON"
                     value={batchContractsRaw}
                     onChange={(e) => setBatchContractsRaw(e.target.value)}
                     className="h-44 w-full rounded-xl border border-white/10 bg-slate-950/70 p-3 font-mono text-[11px] text-slate-200 outline-none"
