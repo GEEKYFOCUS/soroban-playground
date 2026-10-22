@@ -1,0 +1,43 @@
+{
+  "name": "Validate backend integration after Babel compatibility fix",
+  "on": {
+    "push": {
+      "branches": [
+        "validate/1732-backend-integration"
+      ]
+    }
+  },
+  "permissions": {
+    "contents": "read"
+  },
+  "jobs": {
+    "backend": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 12,
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "uses": "actions/setup-node@v4",
+          "with": {
+            "node-version": "22",
+            "cache": "npm"
+          }
+        },
+        {
+          "name": "Install locked dependencies without lifecycle scripts",
+          "run": "npm ci --ignore-scripts --no-audit --no-fund"
+        },
+        {
+          "name": "Media, preflight, websocket and security regression suites",
+          "working-directory": "backend",
+          "run": "npx jest tests/deployPreflight.test.js tests/deployPreflightRoute.test.js tests/mediaSignaling.test.js tests/websocket.test.js tests/websocket.heartbeat.test.js tests/securityHeaders.test.js --runInBand",
+          "env": {
+            "NODE_ENV": "test"
+          }
+        }
+      ]
+    }
+  }
+}
