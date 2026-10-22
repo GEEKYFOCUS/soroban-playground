@@ -182,8 +182,7 @@ function toJsonName(fieldName: string): string {
 
 function messageSchema(name: string): Record<string, unknown> {
   const definition = definitions[`soroban_playground.${name}`] as
-    | ProtoMessage
-    | undefined;
+    ProtoMessage | undefined;
   if (!definition || !('type' in definition)) {
     throw new Error(`Missing protobuf message definition: ${name}`);
   }
@@ -220,8 +219,7 @@ function addMessageSchema(name: string, schemas: Record<string, unknown>) {
 
   schemas[name] = { type: 'object', properties: {} };
   const definition = definitions[`soroban_playground.${name}`] as
-    | ProtoMessage
-    | undefined;
+    ProtoMessage | undefined;
   if (!definition || !('type' in definition)) {
     throw new Error(`Missing protobuf message definition: ${name}`);
   }
