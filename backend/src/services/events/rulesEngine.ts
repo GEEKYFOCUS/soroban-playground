@@ -4,14 +4,7 @@
 import express, { Request, Response, Router } from 'express';
 
 export type ComparisonOperator =
-  | 'eq'
-  | 'neq'
-  | 'gt'
-  | 'gte'
-  | 'lt'
-  | 'lte'
-  | 'in'
-  | 'regex';
+  'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'regex';
 
 export type NotificationType = 'webhook' | 'slack' | 'telegram' | 'email';
 
