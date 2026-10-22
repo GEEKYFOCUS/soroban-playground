@@ -400,3 +400,7 @@ a {
 :is(button, a).bg-gray-700.text-gray-400:hover {
   background-color: #374151;
 }
+
+:root:not([data-theme="light"]) .bg-gray-100.text-gray-500 { color: #475569; }
+[data-theme="light"] .bg-white .text-gray-500,
+[data-theme="light"] .bg-gray-100.text-gray-500 { color: #cbd5e1; }
