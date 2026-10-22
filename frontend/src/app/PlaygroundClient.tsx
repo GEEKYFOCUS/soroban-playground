@@ -478,7 +478,7 @@ export default function Home() {
 
   const appendLog = useCallback((msg: string) => {
     setLogs((prev) => [...prev, msg]);
-  }, []);
+  }, [setLogs]);
 
   useEffect(() => {
     setContractAbi(parseContractAbiFromSource(code));
