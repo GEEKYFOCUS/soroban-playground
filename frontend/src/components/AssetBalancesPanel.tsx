@@ -178,7 +178,7 @@ export default function AssetBalancesPanel() {
 
       {(error || sacError || priceError) && (
         <div
-          className="space-y-1 text-xs text-amber-200"
+          className="asset-balance-errors space-y-1 text-xs text-amber-200"
           role="status"
           aria-live="polite"
         >
