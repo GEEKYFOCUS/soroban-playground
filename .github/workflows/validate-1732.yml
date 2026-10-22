@@ -1,0 +1,87 @@
+{
+  "name": "Validate accessible navigation",
+  "on": {
+    "push": {
+      "branches": [
+        "validate/1732-accessible-navigation"
+      ]
+    }
+  },
+  "permissions": {
+    "contents": "read"
+  },
+  "jobs": {
+    "accessibility": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 25,
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "uses": "actions/setup-node@v4",
+          "with": {
+            "node-version": "22",
+            "cache": "npm"
+          }
+        },
+        {
+          "name": "Install locked dependencies without lifecycle scripts",
+          "id": "deps",
+          "run": "npm ci --ignore-scripts --no-audit --no-fund"
+        },
+        {
+          "name": "Focus and announcement regression tests",
+          "if": "always() && steps.deps.outcome == 'success'",
+          "run": "npm run test --workspace=frontend -- src/__tests__/lib/accessibility.test.ts src/__tests__/lib/accessibilityEngine.test.ts src/__tests__/components/AccessibilityNavigation.test.tsx src/__tests__/components/commandPalette.test.tsx src/__tests__/components/TransactionSigner.test.tsx"
+        },
+        {
+          "name": "Full frontend suite",
+          "if": "always() && steps.deps.outcome == 'success'",
+          "run": "npm run test --workspace=frontend"
+        },
+        {
+          "name": "Frontend typecheck",
+          "if": "always() && steps.deps.outcome == 'success'",
+          "working-directory": "frontend",
+          "run": "npx tsc --noEmit"
+        },
+        {
+          "name": "Lint changed frontend files",
+          "if": "always() && steps.deps.outcome == 'success'",
+          "working-directory": "frontend",
+          "run": "npx eslint src/__tests__/components/AccessibilityNavigation.test.tsx src/__tests__/lib/accessibility.test.ts src/__tests__/lib/accessibilityEngine.test.ts src/accessibility/ScreenReaderAnnouncer.tsx src/accessibility/SkipNavigation.tsx src/accessibility/useModalAccessibility.ts src/app/PlaygroundClient.tsx src/app/layout.tsx src/app/nft-amm/page.tsx src/app/offline/page.tsx src/app/prediction-market/page.tsx src/app/price-aggregator/page.tsx src/app/quadratic-voting/page.tsx src/app/reit/page.tsx src/app/sports-prediction/page.tsx src/app/synthetic-assets/page.tsx src/app/template-library/page.tsx src/app/token-burn/page.tsx src/app/token-gated-access/page.tsx src/app/treasury/page.tsx src/app/warranty-management/page.tsx src/app/warranty/page.tsx src/app/yield-optimizer/page.tsx src/components/CommandPalette.tsx src/components/Console.tsx src/components/ConsoleAndEventsDrawer.tsx src/components/Editor.test.tsx src/components/Editor.tsx src/components/RenderWarningModal.tsx src/components/Sidebar.tsx src/components/TransactionSigner.tsx src/components/onboarding/OnboardingTour.tsx src/hooks/useMonaco.ts src/lib/accessibility.ts"
+        },
+        {
+          "name": "Production frontend build",
+          "id": "build",
+          "if": "always() && steps.deps.outcome == 'success'",
+          "run": "npm run build --workspace=frontend",
+          "env": {
+            "NODE_OPTIONS": "--max-old-space-size=4096",
+            "NEXT_TELEMETRY_DISABLED": "1"
+          }
+        },
+        {
+          "name": "Install Chromium",
+          "if": "always() && steps.deps.outcome == 'success'",
+          "run": "npx playwright install --with-deps chromium"
+        },
+        {
+          "name": "All-route axe and keyboard browser regression",
+          "if": "always() && steps.build.outcome == 'success'",
+          "run": "npx playwright test --config playwright.accessibility.config.ts"
+        },
+        {
+          "name": "Accessibility evidence",
+          "if": "always()",
+          "uses": "actions/upload-artifact@v4",
+          "with": {
+            "name": "accessibility-review",
+            "path": "accessibility-report/\ntest-results/"
+          }
+        }
+      ]
+    }
+  }
+}
