@@ -21,9 +21,6 @@ class FakeSocket {
   onerror: (() => void) | null = null;
   send = jest.fn();
   close = jest.fn();
-  constructor() {
-    currentSocket = this;
-  }
 }
 const controls = {
   startAudio: jest.fn(),
@@ -48,7 +45,13 @@ beforeEach(() => {
   });
   Object.assign(globalThis, {
     RTCPeerConnection: jest.fn(),
-    WebSocket: FakeSocket,
+    WebSocket: Object.assign(
+      jest.fn(() => {
+        currentSocket = new FakeSocket();
+        return currentSocket;
+      }),
+      { OPEN: 1 },
+    ),
   });
 });
 async function join() {
