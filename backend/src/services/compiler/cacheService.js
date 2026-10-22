@@ -48,7 +48,8 @@ function buildS3Client() {
         (process.env.S3_ACCESS_KEY_ID ?? process.env.R2_ACCESS_KEY_ID) || '',
       secretAccessKey:
         (process.env.S3_SECRET_ACCESS_KEY ??
-          process.env.R2_SECRET_ACCESS_KEY) || '',
+          process.env.R2_SECRET_ACCESS_KEY) ||
+        '',
     },
     forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true',
   });

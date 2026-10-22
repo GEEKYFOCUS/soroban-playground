@@ -10,6 +10,10 @@
   "permissions": {
     "contents": "read"
   },
+  "concurrency": {
+    "group": "backend-integration",
+    "cancel-in-progress": true
+  },
   "jobs": {
     "backend": {
       "runs-on": "ubuntu-24.04",
@@ -28,6 +32,11 @@
         {
           "name": "Install locked dependencies without lifecycle scripts",
           "run": "npm ci --ignore-scripts --no-audit --no-fund"
+        },
+        {
+          "name": "Verify test setup and Babel compatibility",
+          "working-directory": "backend",
+          "run": "node -e \"const fs=require('fs'); if(!fs.existsSync('tests/setupEnv.js')) throw Error('Tracked test setup is missing'); const babel=require('@babel/core'); console.log('Babel core:',babel.version); if(!babel.version.startsWith('7.')) throw Error('Incompatible Babel core');\""
         },
         {
           "name": "Media, preflight, websocket and security regression suites",
