@@ -141,7 +141,7 @@ describe("generateSdkBundle", () => {
       bundle.files.find((f) => f.name === "package.json")!.content,
     );
     expect(pkg.dependencies).toHaveProperty("@stellar/stellar-sdk");
-    expect(pkg.dependencies).toHaveProperty("@ktorban/client");
+    expect(pkg.dependencies).not.toHaveProperty("@ktorban/client");
   });
 
   it("generates README with install snippets", () => {

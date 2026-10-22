@@ -35,7 +35,8 @@ test("skip links move focus to the requested region", () => {
   HTMLElement.prototype.scrollIntoView = jest.fn();
   fireEvent.click(screen.getByRole("link", { name: "Skip to editor" }));
   expect(document.activeElement?.id).toBe("workspace-editor");
-  fireEvent.click(screen.getByRole("link", { name: "Skip to console" }));
+  expect(screen.queryByRole("link", { name: "Skip to console" })).toBeNull();
+  fireEvent.click(screen.getByRole("link", { name: "Skip to main content" }));
   expect(document.activeElement?.id).toBe("main-content");
 });
 test("modal hook handles Escape, contains Tab and restores trigger focus", () => {
