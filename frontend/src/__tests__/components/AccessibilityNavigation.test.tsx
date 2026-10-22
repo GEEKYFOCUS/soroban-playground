@@ -89,7 +89,13 @@ test("output tabs support arrows and selection semantics", () => {
 
 test("busy build controls retain keyboard focus and prevent duplicate requests", () => {
   const onCompile = jest.fn();
-  const props = { onCompile, onDeploy: jest.fn(), isCompiling: false, isDeploying: false, hasCompiled: true };
+  const props = {
+    onCompile,
+    onDeploy: jest.fn(),
+    isCompiling: false,
+    isDeploying: false,
+    hasCompiled: true,
+  };
   const { rerender } = render(<DeployPanel {...props} />);
   const button = screen.getByRole("button", { name: "Compile", exact: true });
   button.focus();
