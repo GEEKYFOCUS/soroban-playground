@@ -1,0 +1,104 @@
+{
+  "name": "Validate WebRTC collaboration",
+  "on": {
+    "push": {
+      "branches": [
+        "validate/1722-webrtc-media"
+      ]
+    }
+  },
+  "permissions": {
+    "contents": "read"
+  },
+  "jobs": {
+    "frontend": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 20,
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "uses": "actions/setup-node@v4",
+          "with": {
+            "node-version": "22",
+            "cache": "npm"
+          }
+        },
+        {
+          "name": "Install locked dependencies without lifecycle scripts",
+          "run": "npm ci --ignore-scripts --no-audit --no-fund"
+        },
+        {
+          "name": "WebRTC state machine and UI regression tests",
+          "run": "npm run test --workspace=frontend -- src/__tests__/collaboration src/__tests__/lib/securityHeaders.test.ts"
+        },
+        {
+          "name": "Full frontend suite",
+          "if": "always()",
+          "run": "npm run test --workspace=frontend"
+        },
+        {
+          "name": "Frontend typecheck",
+          "if": "always()",
+          "working-directory": "frontend",
+          "run": "npx tsc --noEmit"
+        },
+        {
+          "name": "Lint changed frontend files",
+          "if": "always()",
+          "working-directory": "frontend",
+          "run": "npx eslint src/collaboration src/__tests__/collaboration src/lib/securityHeaders.ts src/app/PlaygroundClient.tsx"
+        },
+        {
+          "name": "Production frontend build",
+          "if": "always()",
+          "run": "npm run build --workspace=frontend",
+          "env": {
+            "NODE_OPTIONS": "--max-old-space-size=4096",
+            "NEXT_TELEMETRY_DISABLED": "1"
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 15,
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "uses": "actions/setup-node@v4",
+          "with": {
+            "node-version": "22",
+            "cache": "npm"
+          }
+        },
+        {
+          "name": "Install locked dependencies without lifecycle scripts",
+          "run": "npm ci --ignore-scripts --no-audit --no-fund"
+        },
+        {
+          "name": "Room isolation and signaling regression",
+          "run": "npx jest --config backend/jest.config.cjs backend/tests/mediaSignaling.test.js backend/tests/websocket.test.js backend/tests/websocket.heartbeat.test.js --runInBand",
+          "env": {
+            "NODE_ENV": "test"
+          }
+        },
+        {
+          "name": "Lint changed backend files",
+          "if": "always()",
+          "working-directory": "backend",
+          "run": "npx eslint src/services/mediaSignaling.js src/websocket.js tests/mediaSignaling.test.js"
+        },
+        {
+          "name": "Check formatting",
+          "if": "always()",
+          "working-directory": "backend",
+          "run": "npx prettier --check src/services/mediaSignaling.js src/websocket.js tests/mediaSignaling.test.js"
+        }
+      ]
+    }
+  }
+}
