@@ -1,0 +1,122 @@
+{
+  "name": "Validate deployment pre-flight",
+  "on": {
+    "push": {
+      "branches": [
+        "validate/1731-deployment-preflight"
+      ]
+    }
+  },
+  "permissions": {
+    "contents": "read"
+  },
+  "jobs": {
+    "frontend": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 20,
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "uses": "actions/setup-node@v4",
+          "with": {
+            "node-version": "22",
+            "cache": "npm"
+          }
+        },
+        {
+          "name": "Install locked dependencies without lifecycle scripts",
+          "run": "npm ci --ignore-scripts --no-audit --no-fund"
+        },
+        {
+          "name": "Deployment checklist regression",
+          "run": "npm run test --workspace=frontend -- src/__tests__/components/PreflightChecklist.test.tsx src/__tests__/components/DeployPanel.test.tsx"
+        },
+        {
+          "name": "Full frontend suite",
+          "if": "always()",
+          "run": "npm run test --workspace=frontend"
+        },
+        {
+          "name": "Frontend typecheck",
+          "if": "always()",
+          "working-directory": "frontend",
+          "run": "npx tsc --noEmit"
+        },
+        {
+          "name": "Lint changed frontend files",
+          "if": "always()",
+          "working-directory": "frontend",
+          "run": "npx eslint src/components/Deploy/PreflightChecklist.tsx src/components/DeployPanel.tsx src/__tests__/components/PreflightChecklist.test.tsx src/app/PlaygroundClient.tsx"
+        },
+        {
+          "name": "Production frontend build",
+          "if": "always()",
+          "run": "npm run build --workspace=frontend",
+          "env": {
+            "NODE_OPTIONS": "--max-old-space-size=4096",
+            "NEXT_TELEMETRY_DISABLED": "1"
+          }
+        },
+        {
+          "name": "Record repaired dependency lock",
+          "if": "always()",
+          "uses": "actions/upload-artifact@v4",
+          "with": {
+            "name": "preflight-frontend-lock",
+            "path": "package-lock.json"
+          }
+        }
+      ]
+    },
+    "backend": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 15,
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "uses": "actions/setup-node@v4",
+          "with": {
+            "node-version": "22",
+            "cache": "npm"
+          }
+        },
+        {
+          "name": "Install locked dependencies without lifecycle scripts",
+          "run": "npm ci --ignore-scripts --no-audit --no-fund"
+        },
+        {
+          "name": "Preflight derivation rules and server guards",
+          "run": "npx jest --config backend/jest.config.cjs backend/tests/deployPreflight.test.js backend/tests/deployPreflightRoute.test.js backend/tests/sorobanSchemas.test.js backend/tests/validationZod.test.js --runInBand",
+          "env": {
+            "NODE_ENV": "test"
+          }
+        },
+        {
+          "name": "Lint changed backend files",
+          "if": "always()",
+          "working-directory": "backend",
+          "run": "npx eslint src/services/deployPreflight.js src/services/deployService.js src/routes/v1/deploy.js src/schemas/sorobanSchemas.js tests/deployPreflight.test.js tests/deployPreflightRoute.test.js"
+        },
+        {
+          "name": "Check formatting",
+          "if": "always()",
+          "working-directory": "backend",
+          "run": "npx prettier --check src/services/deployPreflight.js src/services/deployService.js src/routes/v1/deploy.js src/schemas/sorobanSchemas.js tests/deployPreflight.test.js tests/deployPreflightRoute.test.js"
+        },
+        {
+          "name": "Record repaired dependency lock",
+          "if": "always()",
+          "uses": "actions/upload-artifact@v4",
+          "with": {
+            "name": "preflight-backend-lock",
+            "path": "package-lock.json"
+          }
+        }
+      ]
+    }
+  }
+}
