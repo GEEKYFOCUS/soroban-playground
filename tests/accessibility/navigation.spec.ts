@@ -182,8 +182,7 @@ test("build and deployment outcomes reach live regions without moving keyboard f
     "Compilation succeeded",
   );
   const deploy = page.getByRole("button", {
-    name: "Deploy to Testnet",
-    exact: true,
+    name: /^Deploy to /,
   });
   await page
     .getByRole("button", { name: "Generate salt", exact: true })

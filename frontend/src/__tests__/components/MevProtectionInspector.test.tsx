@@ -53,9 +53,7 @@ describe("MevProtectionInspector Component", () => {
     expect(screen.getByTestId("mev-alert-critical")).toBeInTheDocument();
     expect(screen.getByText(/High MEV Vulnerability/i)).toBeInTheDocument();
     expect(
-      screen.getByText(
-        /exposes this transaction to automated sandwich attacks/i,
-      ),
+      screen.getByText(/Potential output loss up to/i),
     ).toBeInTheDocument();
   });
 

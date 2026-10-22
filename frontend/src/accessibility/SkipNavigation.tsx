@@ -1,20 +1,40 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useSyncExternalStore } from "react";
+
+const destinations = [
+  ["main-content", "Skip to main content"],
+  ["workspace-editor", "Skip to editor"],
+  ["workspace-console", "Skip to console"],
+  ["primary-navigation", "Skip to navigation"],
+];
+const snapshot = () =>
+  destinations
+    .filter(([id]) => document.getElementById(id))
+    .map(([id]) => id)
+    .join(",");
+const subscribe = (changed: () => void) => {
+  const observer = new MutationObserver(changed);
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["id"],
+  });
+  return () => observer.disconnect();
+};
 
 /** Plain anchors work before hydration; mounted handlers explicitly move focus. */
 export function SkipNavigation() {
-  const pathname = usePathname();
-  const workspace = pathname === "/" || pathname === "/playground";
+  const mounted = useSyncExternalStore(
+    subscribe,
+    snapshot,
+    () => "main-content,primary-navigation",
+  );
   return (
     <nav aria-label="Skip navigation" className="skip-navigation">
-      {[
-        ["main-content", "Skip to main content"],
-        ["workspace-editor", "Skip to editor"],
-        ["workspace-console", "Skip to console"],
-        ["primary-navigation", "Skip to navigation"],
-      ]
-        .filter(([target]) => workspace || !target.startsWith("workspace-"))
+      {destinations
+        .filter(([target]) => mounted.split(",").includes(target))
         .map(([target, label]) => (
           <a
             key={target}

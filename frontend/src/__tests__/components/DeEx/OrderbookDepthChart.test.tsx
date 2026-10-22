@@ -244,7 +244,9 @@ describe("OrderbookDepthChart UI Component", () => {
     expect(
       screen.getByText(/Orderbook Depth/i, { selector: "span" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/(XLM\/USDC)/i, { selector: "span" })).toBeInTheDocument();
+    expect(
+      screen.getByText(/(XLM\/USDC)/i, { selector: "span" }),
+    ).toBeInTheDocument();
   });
 
   it("renders mid price and spread percentage badges", () => {

@@ -416,3 +416,13 @@ a {
 [data-theme="light"] .bg-emerald-500\/10.text-emerald-300 {
   color: #065f46;
 }
+
+/* Template surfaces deliberately remain light in the default palette. */
+:root:not([data-theme="light"]) .template-library .text-gray-500 {
+  color: #475569;
+}
+/* An opaque status badge maintains contrast on both light and dark pages. */
+.bg-emerald-500\/10.text-emerald-300 {
+  background-color: #d1fae5;
+  color: #065f46;
+}

@@ -17,7 +17,15 @@ export default defineConfig({
     trace: "off",
     screenshot: "only-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"], channel: process.env.PLAYWRIGHT_CHANNEL } }],
+  projects: [
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        channel: process.env.PLAYWRIGHT_CHANNEL,
+      },
+    },
+  ],
   webServer: {
     command: "npm run start --workspace=frontend",
     url: "http://localhost:3000",
