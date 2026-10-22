@@ -26,6 +26,10 @@
           }
         },
         {
+          "name": "Repair existing manifest/lock drift for validation",
+          "run": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund"
+        },
+        {
           "name": "Install locked dependencies without lifecycle scripts",
           "run": "npm ci --ignore-scripts --no-audit --no-fund"
         },
@@ -58,6 +62,15 @@
             "NODE_OPTIONS": "--max-old-space-size=4096",
             "NEXT_TELEMETRY_DISABLED": "1"
           }
+        },
+        {
+          "name": "Record repaired dependency lock",
+          "if": "always()",
+          "uses": "actions/upload-artifact@v4",
+          "with": {
+            "name": "repaired-lock-frontend",
+            "path": "package-lock.json"
+          }
         }
       ]
     },
@@ -74,6 +87,10 @@
             "node-version": "22",
             "cache": "npm"
           }
+        },
+        {
+          "name": "Repair existing manifest/lock drift for validation",
+          "run": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund"
         },
         {
           "name": "Install locked dependencies without lifecycle scripts",
@@ -97,6 +114,15 @@
           "if": "always()",
           "working-directory": "backend",
           "run": "npx prettier --check src/services/mediaSignaling.js src/websocket.js tests/mediaSignaling.test.js"
+        },
+        {
+          "name": "Record repaired dependency lock",
+          "if": "always()",
+          "uses": "actions/upload-artifact@v4",
+          "with": {
+            "name": "repaired-lock-backend",
+            "path": "package-lock.json"
+          }
         }
       ]
     }
