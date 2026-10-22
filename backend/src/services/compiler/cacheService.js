@@ -166,7 +166,7 @@ export class CompilationCacheService {
     // S3 is enabled when credentials are present
     const hasCredentials = Boolean(
       (process.env.S3_ACCESS_KEY_ID ?? process.env.R2_ACCESS_KEY_ID) &&
-        (process.env.S3_SECRET_ACCESS_KEY ?? process.env.R2_SECRET_ACCESS_KEY)
+      (process.env.S3_SECRET_ACCESS_KEY ?? process.env.R2_SECRET_ACCESS_KEY)
     );
     this.s3Enabled =
       hasCredentials && process.env.COMPILE_CACHE_S3_DISABLED !== 'true';
