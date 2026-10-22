@@ -11,9 +11,9 @@
     "contents": "read"
   },
   "jobs": {
-    "accessibility": {
+    "checks": {
       "runs-on": "ubuntu-24.04",
-      "timeout-minutes": 25,
+      "timeout-minutes": 12,
       "steps": [
         {
           "uses": "actions/checkout@v4"
@@ -36,6 +36,11 @@
           "run": "npm run test --workspace=frontend -- src/__tests__/lib/accessibility.test.ts src/__tests__/lib/accessibilityEngine.test.ts src/__tests__/components/AccessibilityNavigation.test.tsx src/__tests__/components/commandPalette.test.tsx src/__tests__/components/TransactionSigner.test.tsx"
         },
         {
+          "name": "Focus and announcement regression tests",
+          "if": "always() && steps.deps.outcome == 'success'",
+          "run": "npm run test --workspace=frontend -- src/__tests__/lib/accessibility.test.ts src/__tests__/lib/accessibilityEngine.test.ts src/__tests__/components/AccessibilityNavigation.test.tsx src/__tests__/components/commandPalette.test.tsx src/__tests__/components/TransactionSigner.test.tsx"
+        },
+        {
           "name": "Full frontend suite",
           "if": "always() && steps.deps.outcome == 'success'",
           "run": "npm run test:all --workspace=frontend"
@@ -51,6 +56,35 @@
           "if": "always() && steps.deps.outcome == 'success'",
           "working-directory": "frontend",
           "run": "npx eslint jest.config.js src/__tests__/components/AccessibilityNavigation.test.tsx src/__tests__/components/DeEx/OrderbookDepthChart.test.tsx src/__tests__/components/DeployPanel.test.tsx src/__tests__/components/MevProtectionInspector.test.tsx src/__tests__/components/Optimizer/WasmOptConfig.test.tsx src/__tests__/components/ProposalImpactVisualizer.test.tsx src/__tests__/components/ZkIdentityBadge.test.tsx src/__tests__/zk/zkProofVerifier.test.ts src/accessibility/SkipNavigation.tsx src/app/PlaygroundClient.tsx src/app/admin/page.tsx src/app/audit/page.tsx src/app/bug-bounty/page.tsx src/app/bug-bounty/submit/page.tsx src/app/docs/page.tsx src/app/governance/history/page.tsx src/app/migration/page.tsx src/app/music-licensing/page.tsx src/app/music-licensing/upload/page.tsx src/app/rate-limits/page.tsx src/app/synthetic-assets/page.tsx src/app/template-library/page.tsx src/components/AuditExplorer.tsx src/components/Chat/AnnotationArchiveDrawer.tsx src/components/Chat/CodeAnnotationThread.tsx src/components/Chat/MarkdownComment.tsx src/components/ContentPublishingPanel.tsx src/components/DeployPanel.tsx src/components/EscrowDashboard.tsx src/components/Export/sdkGenerator.test.ts src/components/FavoritesFilter.tsx src/components/Gov/ProposalImpactVisualizer.tsx src/components/LotteryDashboard.tsx src/components/Mobile/HapticVirtualKeyboard.tsx src/components/Optimizer/WasmOptConfig.tsx src/components/OracleStatusPanel.tsx src/components/PatentRegistryDashboard.tsx src/components/Sidebar.tsx src/components/SocialMediaDashboard.tsx src/components/SportsPredictionMarketPanel.tsx src/components/StablecoinDashboard.tsx src/components/bug-bounty/BountyCard.tsx src/components/onboarding/OnboardingTour.tsx src/components/search/SearchFilters.tsx src/components/treasury/Dashboard.tsx src/lib/annotations/lineTracking.ts src/lib/annotations/monacoGlyphs.ts"
+        }
+      ]
+    },
+    "browser": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 15,
+      "env": {
+        "PLAYWRIGHT_CHANNEL": "chrome"
+      },
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "uses": "actions/setup-node@v4",
+          "with": {
+            "node-version": "22",
+            "cache": "npm"
+          }
+        },
+        {
+          "name": "Install locked dependencies without lifecycle scripts",
+          "id": "deps",
+          "run": "npm ci --ignore-scripts --no-audit --no-fund"
+        },
+        {
+          "name": "Focus and announcement regression tests",
+          "if": "always() && steps.deps.outcome == 'success'",
+          "run": "npm run test --workspace=frontend -- src/__tests__/lib/accessibility.test.ts src/__tests__/lib/accessibilityEngine.test.ts src/__tests__/components/AccessibilityNavigation.test.tsx src/__tests__/components/commandPalette.test.tsx src/__tests__/components/TransactionSigner.test.tsx"
         },
         {
           "name": "Production frontend build",
@@ -63,9 +97,9 @@
           }
         },
         {
-          "name": "Install Chromium",
+          "name": "Verify runner Chrome",
           "if": "always() && steps.build.outcome == 'success'",
-          "run": "npx playwright install --with-deps chromium"
+          "run": "google-chrome --version"
         },
         {
           "name": "All-route axe and keyboard browser regression",
